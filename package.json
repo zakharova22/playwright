@@ -7,7 +7,14 @@
     "tests:chrome": "playwright test --config=playwright.config.ts --project=Chromium",
     "tests:firefox": "playwright test --config=playwright.config.ts --project=Firefox",
     "tests:webkit": "playwright test --config=playwright.config.ts --project=Webkit",
-    "tests:e2e": "playwright test --config=e2e.config.ts --project=Chromium"
+    "tests:e2e": "playwright test --config=e2e.config.ts --project=Chromium",
+    "tests:visual:chrome": "playwright test --config.visual.ts --project=Chromium",
+    "tests:visual:firefox": "playwright test --config.visual.ts --project=Firefox",
+    "tests:visual:webkit": "playwright test --config.visual.ts --project=Webkit",
+    "tests:visual:chrome:update": "playwright test --config.visual.ts --project=Chromium --update-snapshots",
+    "tests:visual:firefox:update": "playwright test --config.visual.ts --project=Firefox --update-snapshots",
+    "tests:visual:webkit:update": "playwright test --config.visual.ts --project=Webkit --update-snapshots",
+    "tests:api": "playwright test --config=api.config.ts --project=Chromium"
   },
   "keywords": [
     "Automation"
@@ -15,7 +22,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@playwright/test": "^1.40.1",
+    "@playwright/test": "^1.41.1",
     "prettier": "^3.1.1"
   }
 }

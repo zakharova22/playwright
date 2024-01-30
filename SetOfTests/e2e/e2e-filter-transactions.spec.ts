@@ -2,7 +2,7 @@ import {test, expect} from '@playwright/test'
 import { HomePage} from '../../page-objects/HomePage'
 import { LoginPage } from '../../page-objects/LoginPage'
 
-test.describe("Filter transactions", () => {
+test.describe ("Filter transactions", () => {
     let homePage: HomePage
     let loginPage: LoginPage
 
@@ -14,13 +14,6 @@ test.describe("Filter transactions", () => {
         homePage.visit()
         homePage.clickOnSignIn()
         loginPage.login('username', 'password')
-
-        // await page.goto('http://zero.webappsecurity.com/index.html')
-        // await page.click ('#signin_button')
-        // await page.type('#user_login', "username")
-        // await page.type('#user_password', "password")
-        // await page.click('text=Sign in')
-        // await page.goto('http://zero.webappsecurity.com/bank/account-summary.html')
     })
 
     test ("Verify the result for each account", async ({ page }) => {

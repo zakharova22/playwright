@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 import { LoginPage } from '../../page-objects/LoginPage'
 import { HomePage } from '../../page-objects/HomePage'
 
-test.describe.parallel("Login / Logout flow", () => {
+test.describe.parallel.only("Login / Logout flow", () => {
     let loginPage: LoginPage
     let homePage: HomePage
 
@@ -16,24 +16,14 @@ test.describe.parallel("Login / Logout flow", () => {
 
     //Negative scenario
     test ("Negative scenario for Login", async({ page }) => {
-        //await page.click ('#signin_button')
-        // await page.type('#user_login', "invalid username")
-        // await page.type('#user_password', "invalid password")
-        // await page.click('text=Sign in')
         await homePage.clickOnSignIn()
         await loginPage.login("invalid username", "invalid password")
+        await loginPage.wait(3000)
         await loginPage.assertErrorMessage()
-        
-        // const errorMessage = await page.locator('.alert-error')
-        // await expect (errorMessage).toContainText("Login and/or password are wrong.")
     })
 
     //Positive scenario + Logout
     test("Positive scenario for Login + Logout", async ({page}) => {
-        //await page.click ('#signin_button')
-        // await page.type('#user_login', "username")
-        // await page.type('#user_password', "password")
-        // await page.click('text=Sign in')
         await homePage.clickOnSignIn()
         await loginPage.login("username", "password")
 
