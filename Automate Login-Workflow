@@ -1,0 +1,154 @@
+import { test, expect } from '@playwright/test'
+
+test.beforeEach( async ({ page }) => {
+    // open the target page to test in the browser
+    await page.goto('http://localhost:3000')
+})
+
+test ('Login form is on page', async ({ page }) => {
+    // select the login form element
+    const loginForm = await page.locator('form:has-text("Sign in")')
+    // verify that the login form is on the page
+    await expect(loginForm).toBeAttached()
+})
+
+test('Required validation messages show up', async ({ page }) => {
+   
+    // select the login button and submit the form
+    const loginButton = page.locator('button:has-text("Log in")')
+    await loginButton.click()
+
+    // select the login form element
+  const loginForm = page.locator('form:has-text("Sign In")')
+
+  // verify that the login form contains the validation messages
+  await expect(loginForm).toContainText('E-mail is a required field')
+  await expect(loginForm).toContainText('Password is a required field')
+})
+
+test('Invalid email validation message show up', async ({ page })=> {
+    //select the email input
+    const emailInput = await page.locator('input:below(label:has-text("E-mail"))').first()
+
+    // fill it out with an invalid email
+    await emailInput.fill('invalid-email#educative.com')
+
+  // select the login button and submit the form
+  const loginButton = page.locator('button:has-text("Log In")')
+  await loginButton.click()
+
+  // select the login form element
+  const loginForm = page.locator('form:has-text("Sign In")')
+
+  // verify that the login form contains the expected validation message
+  await expect(loginForm).toContainText('E-mail must be valid')
+})
+
+test('valid email works', async ({ page }) => {
+    // select the email input
+    const emailInput = await page.locator('input:below(label:has-text("E-mail"))').first()
+    // fill it out with a valid email
+    await emailInput.fill('valid-email@educative.com')
+  
+    // select the login button and submit the form
+    const loginButton = page.locator('button:has-text("Log In")')
+    await loginButton.click()
+  
+    // select the login form element
+    const loginForm = page.locator('form:has-text("Sign In")')
+  
+    // verify that the login form contains the expected validation message
+    await expect(loginForm).not.toContainText('E-mail must be valid')
+  })
+  
+  test('real-time data validation works', async ({ page }) => {
+    // error validation messages
+    const EMAIL_REQUIRED_FIELD_MESSAGE = 'E-mail is a required field'
+    const INVALID_EMAIL_MESSAGE = 'E-mail must be valid'
+    const PASSWORD_REQUIRED_FIELD_MESSAGE = 'Password is a required field'
+  
+    // submit the form to enable the error validation mode
+    const loginButton = page.locator('button:has-text("Log In")')
+    await loginButton.click()
+  
+    // select the login form element
+    const loginForm = page.locator('form:has-text("Sign In")')
+  
+    // the required email message should disappear
+    // and be replaced by the invalid email message
+    // when starting to fill out the email input
+    const emailInput = page.locator('input:below(label:has-text("E-mail"))').first()
+    await emailInput.pressSequentially('valid-ema', {
+        delay: 100
+    })
+    await expect(loginForm).not.toContainText(EMAIL_REQUIRED_FIELD_MESSAGE)
+    await expect(loginForm).toContainText(INVALID_EMAIL_MESSAGE)
+  
+    // the invalid email message should disappear
+    // when finishing to type in the email address
+    await emailInput.pressSequentially('il@educative.com', {
+        delay: 100
+    })
+    await expect(loginForm).not.toContainText(INVALID_EMAIL_MESSAGE)
+  
+    // the required email message should reappear
+    // when clearing the email input
+    await emailInput.fill('')
+    await expect(loginForm).toContainText(EMAIL_REQUIRED_FIELD_MESSAGE)
+  
+    // the required password message should disappear
+    // when filling out the password input
+    const passwordInput = page.locator('input:below(label:has-text("Password"))').first()
+    await passwordInput.fill('test')
+    await expect(loginForm).not.toContainText(PASSWORD_REQUIRED_FIELD_MESSAGE)
+  
+    // the required password message should reappear
+    // when clearing the password input
+    await passwordInput.fill('')
+    await expect(loginForm).toContainText(PASSWORD_REQUIRED_FIELD_MESSAGE)
+  })
+
+  test('fails on invalid credentials', async ({ page }) => {
+    // submit the form with the wrong email and password
+    const emailInput = page.locator('input:below(label:has-text("E-mail"))').first()
+    await emailInput.fill('valid-email@educative.com')
+  
+    const passwordInput = page.locator('input:below(label:has-text("Password"))').first()
+    await passwordInput.fill('mysecretpassword')
+  
+    const loginButton = page.locator('button:has-text("Log In")')
+    await loginButton.click()
+  
+    // select the loading element
+    const loadingElement = page.locator(':text("Loading...")')
+  
+    // wait for the "Loading..." element to disappear
+    await loadingElement.waitFor({ state: 'hidden' })
+  
+    // select the login form element
+    const loginForm = page.locator('form:has-text("Sign In")')
+  
+    // verify that the login form contains the expected error message
+    await expect(loginForm).toContainText('Wrong credentials')
+  })
+  
+  test('succeeds on right credentials', async ({ page }) => {
+    // submit the form with the right email and password
+    const emailInput = page.locator('input:below(label:has-text("E-mail"))').first()
+   await emailInput.fill('test@educative.com')
+  
+    const passwordInput = page.locator('input:below(label:has-text("Password"))').first()
+    await passwordInput.fill('test3000')
+  
+    const loginButton = page.locator('button:has-text("Log In")')
+    await loginButton.click()
+  
+    // select the welcome element on the admin view
+    const welcomeElement = page.locator(':text("Welcome to the Admin Page")')
+  
+    // wait up to 30 seconds for the server to respond and the
+    // admin content to render
+    await expect(welcomeElement).toBeVisible({
+      timeout: 30000
+    })
+  })
